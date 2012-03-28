@@ -39,10 +39,11 @@ public class MainFrame extends javax.swing.JFrame {
         importPanel = new com.iiitb.gui.ImportPanel();
         createPanel = new com.iiitb.gui.CreatePanel();
         exportPanel = new com.iiitb.gui.ExportPanel();
+        configPanel1 = new com.iiitb.gui.ConfigPanel();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         exitMenuItem = new javax.swing.JMenuItem();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        optionMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
 
@@ -103,6 +104,7 @@ public class MainFrame extends javax.swing.JFrame {
         displayPanel.add(importPanel, "import_panel");
         displayPanel.add(createPanel, "create_panel");
         displayPanel.add(exportPanel, "export_panel");
+        displayPanel.add(configPanel1, "config_panel");
 
         getContentPane().add(displayPanel, java.awt.BorderLayout.CENTER);
 
@@ -117,9 +119,14 @@ public class MainFrame extends javax.swing.JFrame {
         });
         fileMenu.add(exitMenuItem);
 
-        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.ALT_MASK));
-        jMenuItem1.setText("Options");
-        fileMenu.add(jMenuItem1);
+        optionMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.ALT_MASK));
+        optionMenuItem.setText("Options");
+        optionMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                optionMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(optionMenuItem);
 
         menuBar.add(fileMenu);
 
@@ -168,9 +175,14 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_importButtonActionPerformed
 
     private void homeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_homeButtonActionPerformed
-         CardLayout card = (CardLayout) displayPanel.getLayout();
-         card.show(displayPanel, "repo_panel");
+        CardLayout card = (CardLayout) displayPanel.getLayout();
+        card.show(displayPanel, "repo_panel");
     }//GEN-LAST:event_homeButtonActionPerformed
+
+    private void optionMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionMenuItemActionPerformed
+        CardLayout card = (CardLayout) displayPanel.getLayout();
+        card.show(displayPanel, "config_panel");
+    }//GEN-LAST:event_optionMenuItemActionPerformed
 
     /**
      * @param args the command line arguments
@@ -215,6 +227,7 @@ public class MainFrame extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
+    private com.iiitb.gui.ConfigPanel configPanel1;
     private javax.swing.JButton createButton;
     private com.iiitb.gui.CreatePanel createPanel;
     private javax.swing.JPanel displayPanel;
@@ -225,9 +238,9 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton homeButton;
     private javax.swing.JButton importButton;
     private com.iiitb.gui.ImportPanel importPanel;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JButton mergeButton;
+    private javax.swing.JMenuItem optionMenuItem;
     private com.iiitb.gui.RepositoryPanel repositoryPanel;
     private javax.swing.JToolBar toolBar;
     // End of variables declaration//GEN-END:variables

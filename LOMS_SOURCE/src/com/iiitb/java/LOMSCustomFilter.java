@@ -5,8 +5,6 @@
 package com.iiitb.java;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 
 /**
  *
@@ -32,6 +30,7 @@ public class LOMSCustomFilter extends javax.swing.filechooser.FileFilter{
         this.extensions = (String[]) extensions.clone();
     }
 
+    @Override
     public boolean accept(File file) {
         if (file.isDirectory()) {
             return true;
@@ -48,6 +47,7 @@ public class LOMSCustomFilter extends javax.swing.filechooser.FileFilter{
         return false;
     }
 
+    @Override
     public String getDescription() {
         return (description == null ? extensions[0] : description);
     }

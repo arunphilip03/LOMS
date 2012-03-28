@@ -355,7 +355,7 @@ public class CreatePanel extends javax.swing.JPanel {
         //File output = new File(rootDir+".zip");
         String output = rootDir+".zip";
         try {
-            new ZipFolder(rootDir, output);
+            ZipFolder zipFolder = new ZipFolder(rootDir, output);
         } catch (Exception ex) {
             Logger.getLogger(CreatePanel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -398,6 +398,7 @@ public class CreatePanel extends javax.swing.JPanel {
             fFile = fileObj;
         }
 
+        @Override
         public String toString() {
             return fileName;
         }
@@ -422,12 +423,15 @@ public class CreatePanel extends javax.swing.JPanel {
             //System.out.println("New value: " + node.getUserObject());
         }
 
+        @Override
         public void treeNodesInserted(TreeModelEvent e) {
         }
 
+        @Override
         public void treeNodesRemoved(TreeModelEvent e) {
         }
 
+        @Override
         public void treeStructureChanged(TreeModelEvent e) {
         }
     }
