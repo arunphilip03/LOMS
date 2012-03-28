@@ -56,15 +56,14 @@ public class CreateImsManifest {
             title.appendChild(doc.createTextNode(rootDir)); // Setting Package Name as title
             organization.appendChild(title);
             
-            //getFileList();
             int item_count = 1;
             for(File file: fileList){
                 String fName=file.getName();
                 StringTokenizer st1 = new StringTokenizer(fName, ".");
 
                 String temp = (String) st1.nextElement();
-                System.out.println("iteration:"+item_count); 
-                System.out.println(temp);
+                //System.out.println("iteration:"+item_count); 
+                //System.out.println(temp);
                 Element item = doc.createElement("item");
                 organization.appendChild(item);
 
@@ -102,13 +101,11 @@ public class CreateImsManifest {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new File(rootDir + "/imsmanifest.xml"));
-
-         
+            StreamResult result = new StreamResult(new File(rootDir + "/imsmanifest.xml"));        
         
             transformer.transform(source, result);
 
-            System.out.println("File saved!");
+            //System.out.println("File saved!");
 
         } catch (ParserConfigurationException pce) {
             pce.toString();
