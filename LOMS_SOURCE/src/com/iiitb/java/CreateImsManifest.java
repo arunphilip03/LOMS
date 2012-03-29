@@ -1,8 +1,11 @@
 package com.iiitb.java;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -18,7 +21,7 @@ import org.w3c.dom.Element;
 public class CreateImsManifest {
   
 
-   public CreateImsManifest(String rootDir, ArrayList<File> fileList) {
+   public void CreateExportImsManifest(String rootDir,String packageName, ArrayList<ManifestData> imsFileInfo) {
 
         try {
             
@@ -53,15 +56,15 @@ public class CreateImsManifest {
             organization.setAttribute("structure", "hierarchical");
 
             Element title = doc.createElement("title");
-            title.appendChild(doc.createTextNode(rootDir)); // Setting Package Name as title
+            title.appendChild(doc.createTextNode(packageName)); // Setting Package Name as title
             organization.appendChild(title);
             
             int item_count = 1;
-            for(File file: fileList){
-                String fName=file.getName();
-                StringTokenizer st1 = new StringTokenizer(fName, ".");
-
-                String temp = (String) st1.nextElement();
+            for(ManifestData md: imsFileInfo){
+//                String fName=file.getName();
+//                StringTokenizer st1 = new StringTokenizer(fName, ".");
+//
+//                String temp = (String) st1.nextElement();
                 //System.out.println("iteration:"+item_count); 
                 //System.out.println(temp);
                 Element item = doc.createElement("item");
@@ -72,7 +75,7 @@ public class CreateImsManifest {
                 item.setAttribute("isvisible", "true");
 
                 Element title1 = doc.createElement("title");
-                title1.appendChild(doc.createTextNode(temp));
+                title1.appendChild(doc.createTextNode(md.getFileName()));
                 item.appendChild(title1);
               
             }
@@ -82,17 +85,35 @@ public class CreateImsManifest {
             Element resources = doc.createElement("resources");
             rootElement.appendChild(resources);
             item_count = 1;        
-            for(File file: fileList){
-                String name = file.getName();
+            for(ManifestData md: imsFileInfo){
+//                String name = file.getName();
+//                System.out.println(name);
+//                System.out.println(file.getAbsoluteFile());
+//                System.out.println(file.getAbsolutePath());
+//                try {
+//                    System.out.println(file.getCanonicalFile().toString());
+//                    System.out.println(file.getCanonicalPath());
+//                } catch (IOException ex) {
+//                    Logger.getLogger(CreateImsManifest.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//                
+//                 System.out.println(file.getParent());
+//                 System.out.println(file.getParentFile());
+//                  System.out.println(file.getPath());
+                
+                
+                
+                
+                
                 Element resource1 = doc.createElement("resource");
                 resources.appendChild(resource1);
                 resource1.setAttribute("identifier",  "res_"+item_count++);
-                resource1.setAttribute("href",name);
+                resource1.setAttribute("href",md.getHref());
                 resource1.setAttribute("adlcp:scormtype", "sco");
                 resource1.setAttribute("type", "webcontent");
                 Element file1 = doc.createElement("file");
                 resource1.appendChild(file1);
-                file1.setAttribute("href", name);
+                file1.setAttribute("href", md.getHref());
             }
  
 

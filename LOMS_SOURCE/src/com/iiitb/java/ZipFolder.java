@@ -31,6 +31,7 @@ public class ZipFolder {
         }
         zip.flush();
         zip.close();
+        fileWriter.close();
     }
 
     static private void addFileToZip(String path, String srcFile, ZipOutputStream zip)
@@ -52,6 +53,7 @@ public class ZipFolder {
             while ((len = in.read(buf)) > 0) {
                 zip.write(buf, 0, len);
             }
+            in.close();
         }
     }
 

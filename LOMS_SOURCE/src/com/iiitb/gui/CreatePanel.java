@@ -1,7 +1,9 @@
 package com.iiitb.gui;
 
-import com.iiitb.java.LOMSCustomFilter;
+import com.iiitb.config.LOMSProperties;
 import com.iiitb.java.CreateImsManifest;
+import com.iiitb.java.LOMSCustomFilter;
+import com.iiitb.java.ManifestData;
 import com.iiitb.java.ZipFolder;
 import java.awt.Toolkit;
 import java.io.File;
@@ -232,20 +234,27 @@ public class CreatePanel extends javax.swing.JPanel {
         if (model != null) {
             Object root = model.getRoot();
             //System.out.println(root.toString());
+            String packageName = root.toString();
             String rootDir = root.toString();
+            //System.out.println("Root Dir: " + rootDir);
+            rootDir = new LOMSProperties().getTempDirectory() + "\\" + rootDir;
+            //System.out.println("Root Dir: " + rootDir);
 
             /*
-             * create root folder
+             * Create root folder
              */
-            boolean createDirStatus = (new File(rootDir)).mkdir();
+            boolean createDirStatus = (new File(rootDir)).mkdirs();
+            //System.out.println("Status:" + createDirStatus);
 
-            if (!createDirStatus) {
-                System.out.println("Error creating root directory");
+            if (!createDirStatus && !new File(rootDir).exists()) {
+                //System.out.println("Error creating root directory");
+                JOptionPane.showMessageDialog(this, "Error creating temporary directory", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
             walk(model, root, rootDir);
             copyScormXsds(rootDir);
-            new CreateImsManifest(rootDir, fileList);
+            CreateImsManifest createImsManifest = new CreateImsManifest();
+            createImsManifest.CreateExportImsManifest(rootDir, packageName, imsFileInfo);
             createZipPackage(rootDir);
 
 
@@ -254,36 +263,38 @@ public class CreatePanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_createButtonActionPerformed
 
-
     protected void walk(TreeModel model, Object o, String rootDir) {
-        //dirPath=rootDir ;
         int cc;
         cc = model.getChildCount(o);
 
-        //System.out.println("Count" + cc);
+        System.out.println("Count" + cc);
         for (int i = 0; i < cc; i++) {
             Object child = model.getChild(o, i);
             if (model.isLeaf(child)) {
                 //System.out.println("Leaf " + child.toString());
                 DefaultMutableTreeNode tree = (DefaultMutableTreeNode) child;
 
-                //System.out.println("Parent: "+ tree.getParent().toString());
+                String parentFolder = "";
 
                 if (tree.getParent().equals(tree.getRoot())) {
-                    dirPath = tree.getParent().toString();
+                    dirPath = rootDir;
+                    //tree.getParent().toString();
+
                 } else {
                     dirPath = rootDir + "/" + tree.getParent().toString();
+                    parentFolder = tree.getParent().toString();
                 }
 
                 FileInfo fileInfObj = (FileInfo) tree.getUserObject();
-                //System.out.println("dir: " + dirPath);
+                //System.out.println("dirPath: " + dirPath);
                 if (dirPath == null) {
                     dirPath = rootDir;
                 }
                 File destFile = new File(dirPath + "/" + fileInfObj.fileName);
                 try {
                     copyFile(fileInfObj.fFile, destFile);
-                    populateFileList(fileInfObj);
+
+                    populateFileList(fileInfObj, parentFolder);
                 } catch (IOException ex) {
                     Logger.getLogger(CreatePanel.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -298,24 +309,33 @@ public class CreatePanel extends javax.swing.JPanel {
             }
         }
     }
-    
-    
-    private void populateFileList(FileInfo fileInfObj){
-        
-        fileList.add(fileInfObj.fFile);
-        System.out.println("Adding file to list: "+ fileInfObj.fileName);
-        
+
+    private void populateFileList(FileInfo fileInfObj, String parentFolder) {
+
+        String fileNameNoExtn = fileInfObj.fileName.substring(0, fileInfObj.fileName.lastIndexOf('.'));
+
+        ManifestData mdObj = new ManifestData();
+        mdObj.setFileName(fileNameNoExtn);
+        if (parentFolder.isEmpty()) {
+            mdObj.setHref(fileInfObj.fileName);
+        } else {
+            mdObj.setHref(parentFolder + "/" + fileInfObj.fileName);
+        }
+        imsFileInfo.add(mdObj);
+
     }
 
-    protected void copyScormXsds(String rootDir) {        
+    protected void copyScormXsds(String rootDir) {
 
-        String filePath = scormFolderBase + "/" + "scorm12schemadefinition/adlcp_rootv1p2.xsd";
+        String filePath = "scorm12schemadefinition";
         String[] xsdFiles = {"adlcp_rootv1p2.xsd", "ims_xml.xsd", "imscp_rootv1p1p2.xsd", "imsmd_rootv1p2p1.xsd"};
 
         for (String file : xsdFiles) {
-          File destFile = new File(rootDir + "/" + file);
+            File srcFile = new File(filePath + "\\" + file);
+            //System.out.println("Source File:: "+srcFile);
+            File destFile = new File(rootDir + "\\" + file);
             try {
-                copyFile(new File(filePath), destFile);
+                copyFile(srcFile, destFile);
             } catch (IOException ex) {
                 Logger.getLogger(CreatePanel.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -325,7 +345,7 @@ public class CreatePanel extends javax.swing.JPanel {
     }
 
     public static void copyFile(File sourceFile, File destFile) throws IOException {
-      if (!destFile.exists()) {
+        if (!destFile.exists()) {
             destFile.createNewFile();
         }
 
@@ -349,11 +369,11 @@ public class CreatePanel extends javax.swing.JPanel {
             }
         }
     }
-    
-    protected void createZipPackage(String rootDir){
+
+    protected void createZipPackage(String rootDir) {
         //File input = new File(rootDir);
         //File output = new File(rootDir+".zip");
-        String output = rootDir+".zip";
+        String output = rootDir + ".zip";
         try {
             ZipFolder zipFolder = new ZipFolder(rootDir, output);
         } catch (Exception ex) {
@@ -453,6 +473,7 @@ public class CreatePanel extends javax.swing.JPanel {
     private String dirPath;
     private String scormFolderBase = "src";
     private ArrayList<File> fileList = new ArrayList<File>();
+    private ArrayList<ManifestData> imsFileInfo = new ArrayList<ManifestData>();
 
     public void populateTree(String packageName) {
         rootNode = new DefaultMutableTreeNode(packageName);
