@@ -4,7 +4,7 @@
  */
 package com.iiitb.gui;
 
-import com.iiitb.java.LOMSCustomFilter;
+import com.iiitb.utils.LOMSCustomFilter;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
