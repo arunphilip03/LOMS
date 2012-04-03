@@ -230,32 +230,39 @@ public class CreatePanel extends javax.swing.JPanel {
     }//GEN-LAST:event_clearButtonActionPerformed
 
     private void createButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createButtonActionPerformed
-        TreeModel model = PackageTree.getModel();
+                TreeModel model = PackageTree.getModel();
         if (model != null) {
             Object root = model.getRoot();
-            //System.out.println(root.toString());
-            String packageName = root.toString();
-            String rootDir = root.toString();
-            //System.out.println("Root Dir: " + rootDir);
-            rootDir = new LOMSProperties().getTempDirectory() + "\\" + rootDir;
-            //System.out.println("Root Dir: " + rootDir);
 
-            /*
-             * Create root folder
-             */
-            boolean createDirStatus = (new File(rootDir)).mkdirs();
-            //System.out.println("Status:" + createDirStatus);
+            if (model.getChildCount(root) == 0) {
+                JOptionPane.showMessageDialog(this, "Package '" + root.toString() + "' is empty", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                //System.out.println(root.toString());
+                String packageName = root.toString();
+                String rootDir = root.toString();
+                //System.out.println("Root Dir: " + rootDir);
+                rootDir = new LOMSProperties().getTempDirectory() + "\\" + rootDir;
+                //System.out.println("Root Dir: " + rootDir);
 
-            if (!createDirStatus && !new File(rootDir).exists()) {
-                //System.out.println("Error creating root directory");
-                JOptionPane.showMessageDialog(this, "Error creating temporary directory", "Error", JOptionPane.ERROR_MESSAGE);
+                /*
+                 * Create root folder
+                 */
+                boolean createDirStatus = (new File(rootDir)).mkdirs();
+                //System.out.println("Status:" + createDirStatus);
+
+                if (!createDirStatus && !new File(rootDir).exists()) {
+                    //System.out.println("Error creating root directory");
+                    JOptionPane.showMessageDialog(this, "Error creating temporary directory", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
+                boolean walk_result = walk(model, root, rootDir);
+                if (walk_result) {
+                    copyScormXsds(rootDir);
+                    CreateImsManifest createImsManifest = new CreateImsManifest();
+                    createImsManifest.CreateExportImsManifest(rootDir, packageName, imsFileInfo);
+                    createZipPackage(rootDir);
+                }
             }
-
-            walk(model, root, rootDir);
-            copyScormXsds(rootDir);
-            CreateImsManifest createImsManifest = new CreateImsManifest();
-            createImsManifest.CreateExportImsManifest(rootDir, packageName, imsFileInfo);
-            createZipPackage(rootDir);
 
 
         } else {
@@ -263,40 +270,41 @@ public class CreatePanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_createButtonActionPerformed
 
-    protected void walk(TreeModel model, Object o, String rootDir) {
-        int cc;
+    protected boolean walk(TreeModel model, Object o, String rootDir) {
+                int cc;
         cc = model.getChildCount(o);
 
-        System.out.println("Count" + cc);
         for (int i = 0; i < cc; i++) {
             Object child = model.getChild(o, i);
             if (model.isLeaf(child)) {
-                //System.out.println("Leaf " + child.toString());
+
                 DefaultMutableTreeNode tree = (DefaultMutableTreeNode) child;
 
                 String parentFolder = "";
 
                 if (tree.getParent().equals(tree.getRoot())) {
                     dirPath = rootDir;
-                    //tree.getParent().toString();
 
                 } else {
                     dirPath = rootDir + "/" + tree.getParent().toString();
                     parentFolder = tree.getParent().toString();
                 }
-
-                FileInfo fileInfObj = (FileInfo) tree.getUserObject();
-                //System.out.println("dirPath: " + dirPath);
-                if (dirPath == null) {
-                    dirPath = rootDir;
-                }
-                File destFile = new File(dirPath + "/" + fileInfObj.fileName);
                 try {
+                    FileInfo fileInfObj = (FileInfo) tree.getUserObject();
+
+                    if (dirPath == null) {
+                        dirPath = rootDir;
+                    }
+                    File destFile = new File(dirPath + "/" + fileInfObj.fileName);
+
                     copyFile(fileInfObj.fFile, destFile);
 
                     populateFileList(fileInfObj, parentFolder);
                 } catch (IOException ex) {
                     Logger.getLogger(CreatePanel.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ClassCastException cex) {
+                    JOptionPane.showMessageDialog(this, "Empty folder in package", "Error", JOptionPane.ERROR_MESSAGE);
+                    return false;
                 }
 
 
@@ -304,10 +312,11 @@ public class CreatePanel extends javax.swing.JPanel {
                 dirPath = rootDir + "/" + child.toString();
                 DefaultMutableTreeNode tree = (DefaultMutableTreeNode) child;
                 boolean createDirStatus = (new File(dirPath)).mkdirs();
-                //System.out.print(child.toString() + "--");
                 walk(model, child, rootDir);
             }
         }
+
+        return true;
     }
 
     private void populateFileList(FileInfo fileInfObj, String parentFolder) {
