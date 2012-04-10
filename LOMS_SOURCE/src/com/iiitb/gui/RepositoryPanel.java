@@ -1,8 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.iiitb.gui;
+
+import com.iiitb.utils.RepositoryManager;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  *
@@ -15,6 +18,22 @@ public class RepositoryPanel extends javax.swing.JPanel {
      */
     public RepositoryPanel() {
         initComponents();
+    }
+
+    public String[] getRepositoryItems() {
+        
+        String[] repoList = null;
+        
+        try {
+            RepositoryManager repo = new RepositoryManager();            
+            ArrayList packageList = repo.getPackageList();
+            repoList = (String[])packageList.toArray(new String[packageList.size()]);         
+            
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(RepositoryPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return repoList;
+
     }
 
     /**
@@ -32,11 +51,11 @@ public class RepositoryPanel extends javax.swing.JPanel {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
 
-        setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Package Repository", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.BELOW_TOP));
+        setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Repository Manager", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.BELOW_TOP));
         setLayout(new java.awt.BorderLayout());
 
         jList1.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Package 1", "Package 2", "Package 3" };
+            String[] strings = getRepositoryItems();
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
@@ -58,10 +77,26 @@ public class RepositoryPanel extends javax.swing.JPanel {
         jButton2.setFocusable(false);
         jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
         repoToolBar.add(jButton2);
 
         add(repoToolBar, java.awt.BorderLayout.EAST);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+
+        if (jList1.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(this, "Select a package to delete", "Delete Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            int n = JOptionPane.showConfirmDialog(this, "Are you sure you want to permanently delete package '" + jList1.getSelectedValue().toString() + "'",
+                    "Confirm delete", JOptionPane.YES_NO_OPTION);
+        }
+        
+    }//GEN-LAST:event_jButton2ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;

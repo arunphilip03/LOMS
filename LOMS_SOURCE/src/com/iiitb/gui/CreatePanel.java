@@ -271,7 +271,7 @@ public class CreatePanel extends javax.swing.JPanel {
     }//GEN-LAST:event_createButtonActionPerformed
 
     protected boolean walk(TreeModel model, Object o, String rootDir) {
-                int cc;
+        int cc;
         cc = model.getChildCount(o);
 
         for (int i = 0; i < cc; i++) {

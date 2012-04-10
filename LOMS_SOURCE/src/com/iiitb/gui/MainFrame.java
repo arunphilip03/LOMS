@@ -39,7 +39,8 @@ public class MainFrame extends javax.swing.JFrame {
         importPanel = new com.iiitb.gui.ImportPanel();
         createPanel = new com.iiitb.gui.CreatePanel();
         exportPanel = new com.iiitb.gui.ExportPanel();
-        configPanel1 = new com.iiitb.gui.ConfigPanel();
+        configPanel = new com.iiitb.gui.ConfigPanel();
+        mergePanel = new com.iiitb.gui.MergePanel();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         exitMenuItem = new javax.swing.JMenuItem();
@@ -93,6 +94,11 @@ public class MainFrame extends javax.swing.JFrame {
         mergeButton.setFocusable(false);
         mergeButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         mergeButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        mergeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mergeButtonActionPerformed(evt);
+            }
+        });
         toolBar.add(mergeButton);
 
         getContentPane().add(toolBar, java.awt.BorderLayout.NORTH);
@@ -104,7 +110,8 @@ public class MainFrame extends javax.swing.JFrame {
         displayPanel.add(importPanel, "import_panel");
         displayPanel.add(createPanel, "create_panel");
         displayPanel.add(exportPanel, "export_panel");
-        displayPanel.add(configPanel1, "config_panel");
+        displayPanel.add(configPanel, "config_panel");
+        displayPanel.add(mergePanel, "merge_panel");
 
         getContentPane().add(displayPanel, java.awt.BorderLayout.CENTER);
 
@@ -184,6 +191,11 @@ public class MainFrame extends javax.swing.JFrame {
         card.show(displayPanel, "config_panel");
     }//GEN-LAST:event_optionMenuItemActionPerformed
 
+    private void mergeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mergeButtonActionPerformed
+        CardLayout card = (CardLayout) displayPanel.getLayout();
+        card.show(displayPanel, "merge_panel");
+    }//GEN-LAST:event_mergeButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -227,7 +239,7 @@ public class MainFrame extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
-    private com.iiitb.gui.ConfigPanel configPanel1;
+    private com.iiitb.gui.ConfigPanel configPanel;
     private javax.swing.JButton createButton;
     private com.iiitb.gui.CreatePanel createPanel;
     private javax.swing.JPanel displayPanel;
@@ -240,6 +252,7 @@ public class MainFrame extends javax.swing.JFrame {
     private com.iiitb.gui.ImportPanel importPanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JButton mergeButton;
+    private com.iiitb.gui.MergePanel mergePanel;
     private javax.swing.JMenuItem optionMenuItem;
     private com.iiitb.gui.RepositoryPanel repositoryPanel;
     private javax.swing.JToolBar toolBar;
